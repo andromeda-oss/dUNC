@@ -8,16 +8,21 @@ return function()
     local fromGameThread
     local done = false
 
-    task.spawn(function()
+    local bindable = Instance.new("BindableEvent")
+    bindable.Event:Connect(function()
         fromGameThread = checkcaller()
         done = true
     end)
+
+    bindable:Fire()
 
     local timeout = 1
     local start = os.clock()
     while not done and os.clock() - start < timeout do
         task.wait()
     end
+
+    bindable:Destroy()
 
     if not done then
         return false, "Thread timeout — unable to verify game thread"
