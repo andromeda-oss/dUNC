@@ -1,6 +1,7 @@
 local tests = {
     closures = {
         "checkcaller",
+        "clonefunction",
     },
 }
 
