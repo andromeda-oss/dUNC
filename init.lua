@@ -13,7 +13,10 @@ local function create_test(folder, name)
     local url = "https://raw.githubusercontent.com/andromeda-oss/dUNC/main/functions/"
     local file = url .. folder .. "/" .. name .. ".lua"
 
-    local func, req = loadstring(game:HttpGet(file))()
+    local src = game:HttpGet(file)
+    print(file)
+    print("Fetched code:\n" .. src)
+    local func, req = loadstring(src)()
     if type(func) ~= "function" then
         error(`Test file '{folder}/{name}' did not return a function`)
     end
@@ -24,7 +27,12 @@ end
 local function run_test(folder, name)
     if results.passed[name] or results.failed[name] then return end
 
-    local success, func, req = pcall(create_test, folder, name)
+    local success, func, req = pcall(function()
+        return create_test(folder, name)
+    end)
+
+    print(success,func,req)
+
     if not success then
         results.failed[name] = "Load error: " .. tostring(func)
         warn("💥", name, "=> failed to load:", func)
